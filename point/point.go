@@ -1,6 +1,6 @@
 package point
 
-type Point struct{
+type Point struct {
 	X int
 	Y int
 }

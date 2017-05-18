@@ -1,20 +1,21 @@
 package harris
 
 import (
-	"yi/matrix"
 	"image"
-	"yi/point"
 	"log"
+	"yi/matrix"
+	"yi/point"
 )
+
 const k = 0.04
 
 func smoothFilter() matrix.Matrix {
-	result := matrix.Ones(3, 3).Scale(float64(1)/float64(9))
+	result := matrix.Ones(3, 3).Scale(float64(1) / float64(9))
 	return result
 }
 
 func gaussianFilter() matrix.Matrix {
-	arr := [][]float64 {
+	arr := [][]float64{
 		[]float64{1, 4, 7, 4, 1},
 		[]float64{4, 16, 26, 16, 4},
 		[]float64{7, 26, 41, 26, 7},
@@ -22,14 +23,14 @@ func gaussianFilter() matrix.Matrix {
 		[]float64{1, 4, 7, 4, 1},
 	}
 	newMatrix := matrix.Matrix(arr)
-	return newMatrix.Scale(float64(1)/newMatrix.Sum())
+	return newMatrix.Scale(float64(1) / newMatrix.Sum())
 }
 
 func imageGradientX() matrix.Matrix {
-	arr := [][]float64 {
-		[]float64{ -1, 0, 1},
-		[]float64{ -1, 0, 1},
-		[]float64{ -1, 0, 1},
+	arr := [][]float64{
+		[]float64{-1, 0, 1},
+		[]float64{-1, 0, 1},
+		[]float64{-1, 0, 1},
 	}
 	return matrix.Matrix(arr)
 }
@@ -42,8 +43,8 @@ func isLargestNeighbor(m matrix.Matrix, xPos int, yPos int) bool {
 	row := m.Row()
 	col := m.Col()
 
-	for i := xPos - 1; i <= xPos + 1; i++ {
-		for j := yPos - 1; j <= yPos + 1; j++ {
+	for i := xPos - 1; i <= xPos+1; i++ {
+		for j := yPos - 1; j <= yPos+1; j++ {
 			if i >= 0 && j >= 0 && i < row && j < col {
 				if m[xPos][yPos] < m[i][j] {
 					return false
@@ -71,7 +72,7 @@ func imageGradient(img matrix.Matrix) (matrix.Matrix, matrix.Matrix, error) {
 }
 
 // compute the product of derivatives and pass them with gaussian filter
-func derivatives(imgX matrix.Matrix, imgY matrix.Matrix) (matrix.Matrix, matrix.Matrix,  matrix.Matrix, error) {
+func derivatives(imgX matrix.Matrix, imgY matrix.Matrix) (matrix.Matrix, matrix.Matrix, matrix.Matrix, error) {
 	ixx, err := matrix.ElementWiseMultiplication(imgX, imgX)
 	if err != nil {
 		log.Println("Error calculate ixx")
@@ -120,7 +121,7 @@ func rResponse(sxx matrix.Matrix, syy matrix.Matrix, sxy matrix.Matrix) (matrix.
 		log.Println("Error adding sxx an syy")
 		return nil, err
 	}
-	r, err := matrix.Add(xyProduct, sxy.Power(2).Scale(-1), xyAdd.Power(2).Scale(-1 * k))
+	r, err := matrix.Add(xyProduct, sxy.Power(2).Scale(-1), xyAdd.Power(2).Scale(-1*k))
 	if err != nil {
 		log.Println("Error calculate r response")
 		return nil, err
