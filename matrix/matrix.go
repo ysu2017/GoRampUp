@@ -3,8 +3,8 @@ package matrix
 import (
 	"fmt"
 	"image"
-	"math"
 	"log"
+	"math"
 	"runtime"
 )
 
@@ -16,6 +16,10 @@ func NewMatrix(row int, col int) Matrix {
 		matrix[i] = make([]float64, col)
 	}
 	return Matrix(matrix)
+}
+
+func sameSize(a Matrix, b Matrix) bool {
+	return a.Col() == b.Col() && a.Row() == b.Row()
 }
 
 func deepCopy(m Matrix) Matrix {
@@ -68,7 +72,7 @@ func Add(a Matrix, matrices ...Matrix) (Matrix, error) {
 	row := a.Row()
 
 	for _, m := range matrices {
-		if m.Row() != row || m.Col() != col {
+		if !sameSize(m, a) {
 			return nil, fmt.Errorf("added matrices does not have same dimention")
 		}
 
@@ -92,7 +96,7 @@ func ElementWiseMultiplication(a Matrix, matrices ...Matrix) (Matrix, error) {
 	row := a.Row()
 
 	for _, m := range matrices {
-		if m.Row() != row || m.Col() != col {
+		if !sameSize(m, a) {
 			return nil, fmt.Errorf("element wise multiplicated matrices does not have same dimention")
 		}
 
@@ -174,7 +178,7 @@ func (m Matrix) Power(p float64) Matrix {
 }
 
 func (m Matrix) Compare(compared Matrix, symbol string) (Matrix, error) {
-	if m.Col() != compared.Col() || m.Row() != compared.Row() {
+	if !sameSize(m, compared) {
 		return nil, fmt.Errorf("compared matrix have a different dimension")
 	}
 
@@ -225,13 +229,13 @@ func (m Matrix) Compare(compared Matrix, symbol string) (Matrix, error) {
 func (m Matrix) subMatrix(x int, y int, halfSize int) (Matrix, error) {
 	col := m.Col()
 	row := m.Row()
-	if x - halfSize < 0 || x + halfSize >= row || y - halfSize < 0 || y + halfSize >= col {
+	if x-halfSize < 0 || x+halfSize >= row || y-halfSize < 0 || y+halfSize >= col {
 		return nil, fmt.Errorf("Error creating sub matrix")
 	}
-	matrix := NewMatrix(2 * halfSize + 1, 2 * halfSize + 1)
-	for i := x - halfSize; i <= x + halfSize; i++ {
-		for j := y - halfSize; j <= y + halfSize; j++ {
-			matrix[i - x + halfSize][j - y + halfSize] = m[i][j]
+	matrix := NewMatrix(2*halfSize+1, 2*halfSize+1)
+	for i := x - halfSize; i <= x+halfSize; i++ {
+		for j := y - halfSize; j <= y+halfSize; j++ {
+			matrix[i-x+halfSize][j-y+halfSize] = m[i][j]
 		}
 	}
 	return matrix, nil
@@ -251,17 +255,17 @@ func (m Matrix) Filter(filter Matrix) (Matrix, error) {
 		return nil, fmt.Errorf("filter row must be equal to its col, but got row %d, col %d", filterRow, filterCol)
 	}
 
-	if filterCol % 2 != 1 {
+	if filterCol%2 != 1 {
 		return nil, fmt.Errorf("filter row and col must be a odd number, currently got %d", filterCol)
 	}
 
-	halfSize := filterCol/2
+	halfSize := filterCol / 2
 	newMatrix := deepCopy(m)
 
 	channel := make(chan int, runtime.NumCPU())
 	errChannel := make(chan error)
-	for i := halfSize; i < row - halfSize; i++ {
-		for j := halfSize; j < col - halfSize; j++ {
+	for i := halfSize; i < row-halfSize; i++ {
+		for j := halfSize; j < col-halfSize; j++ {
 			channel <- 1
 			go func(i, j int) {
 				var err error
