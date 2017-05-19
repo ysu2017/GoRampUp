@@ -3,30 +3,12 @@ package main
 import (
 	"flag"
 	"image"
-	"image/color"
 	"image/jpeg"
 	"log"
 	"os"
 	"yi/harris"
-	"yi/point"
+	"yi/imageUtils"
 )
-
-func markPoint(p point.Point, img *image.RGBA64) {
-	red := color.RGBA{
-		R: 1<<8 - 1,
-		G: 0,
-		B: 0,
-		A: 1<<8 - 1,
-	}
-	for i := p.X - 10; i <= p.X+10; i++ {
-		img.Set(i, p.Y, red)
-		img.Set(i, p.Y+1, red)
-	}
-	for j := p.Y - 10; j <= p.Y+10; j++ {
-		img.Set(p.X, j, red)
-		img.Set(p.X+1, j, red)
-	}
-}
 
 func main() {
 	log.SetOutput(os.Stdout)
@@ -49,22 +31,15 @@ func main() {
 		log.Fatal("error decoding image")
 	}
 
-	newRec := img.Bounds()
-	newImg := image.NewRGBA64(img.Bounds())
-	greyImg := image.NewGray(img.Bounds())
+	greyImg := imageUtils.ImageToGrey(img)
+	rgba64Img := imageUtils.ImageToRGBA64(img)
 
-	for i := newRec.Min.X; i <= newRec.Max.X; i++ {
-		for j := newRec.Min.Y; j <= newRec.Max.Y; j++ {
-			newImg.Set(i, j, img.At(i, j))
-			greyImg.Set(i, j, img.At(i, j))
-		}
-	}
 	corners, err := harris.HarrisCornerDetector(greyImg, 1000000)
 	if err != nil {
 		log.Fatal(err)
 	}
 	for _, p := range corners {
-		markPoint(p, newImg)
+		imageUtils.MarkPointOnRGBA64(p, rgba64Img)
 	}
 
 	newFile, err := os.Create(*output)
@@ -72,5 +47,5 @@ func main() {
 		log.Fatal("Error creating new file")
 	}
 	defer newFile.Close()
-	jpeg.Encode(newFile, newImg, nil)
+	jpeg.Encode(newFile, rgba64Img, nil)
 }
