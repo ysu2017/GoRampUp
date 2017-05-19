@@ -47,5 +47,9 @@ func main() {
 		log.Fatal("Error creating new file")
 	}
 	defer newFile.Close()
-	jpeg.Encode(newFile, rgba64Img, nil)
+
+	err = jpeg.Encode(newFile, rgba64Img, nil)
+	if err != nil {
+		log.Fatal("error encoding image")
+	}
 }
