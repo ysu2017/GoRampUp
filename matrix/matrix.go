@@ -8,6 +8,17 @@ import (
 	"strconv"
 )
 
+type Comparison int
+
+const (
+	Unknown Comparison = iota
+	Less
+	Equals
+	Greater
+	LessOrEquals
+	GreaterOrEquals
+)
+
 type Matrix [][]float64
 
 func NewMatrix(row int, col int) Matrix {
@@ -182,7 +193,7 @@ func (m Matrix) Power(p float64) Matrix {
 	return newMatrix
 }
 
-func (m Matrix) Compare(compared Matrix, symbol string) (Matrix, error) {
+func (m Matrix) Compare(compared Matrix, symbol Comparison) (Matrix, error) {
 	if !sameSize(m, compared) {
 		return nil, fmt.Errorf("compared matrix have a different dimension")
 	}
@@ -193,31 +204,31 @@ func (m Matrix) Compare(compared Matrix, symbol string) (Matrix, error) {
 	for i := 0; i < row; i++ {
 		for j := 0; j < col; j++ {
 			switch symbol {
-			case "<":
+			case Less:
 				if m[i][j] < compared[i][j] {
 					newMatrix[i][j] = m[i][j]
 				} else {
 					newMatrix[i][j] = 0
 				}
-			case "==":
+			case Equals:
 				if m[i][j] == compared[i][j] {
 					newMatrix[i][j] = m[i][j]
 				} else {
 					newMatrix[i][j] = 0
 				}
-			case ">":
+			case Greater:
 				if m[i][j] > compared[i][j] {
 					newMatrix[i][j] = m[i][j]
 				} else {
 					newMatrix[i][j] = 0
 				}
-			case "<=":
+			case LessOrEquals:
 				if m[i][j] <= compared[i][j] {
 					newMatrix[i][j] = m[i][j]
 				} else {
 					newMatrix[i][j] = 0
 				}
-			case ">=":
+			case GreaterOrEquals:
 				if m[i][j] >= compared[i][j] {
 					newMatrix[i][j] = m[i][j]
 				} else {

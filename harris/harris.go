@@ -132,7 +132,7 @@ func rResponse(sxx matrix.Matrix, syy matrix.Matrix, sxy matrix.Matrix) (matrix.
 //Threshold R response
 func applyThreshold(r matrix.Matrix, threshold float64) (matrix.Matrix, error) {
 	thresholdMatrix := matrix.Ones(r.Row(), r.Col()).Scale(threshold)
-	rThresholded, err := r.Compare(thresholdMatrix, ">")
+	rThresholded, err := r.Compare(thresholdMatrix, matrix.Greater)
 	if err != nil {
 		return nil, err
 	}
