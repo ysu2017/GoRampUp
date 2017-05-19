@@ -1,37 +1,46 @@
 package main
 
 import (
+	"flag"
+	"image"
+	"image/color"
+	"image/jpeg"
 	"log"
 	"os"
-	"image"
-	"image/jpeg"
-	"image/color"
-	"yi/point"
 	"yi/harris"
+	"yi/point"
 )
 
 func markPoint(p point.Point, img *image.RGBA64) {
 	red := color.RGBA{
-		R: 1 << 8 - 1,
+		R: 1<<8 - 1,
 		G: 0,
 		B: 0,
-		A: 1 << 8 - 1,
+		A: 1<<8 - 1,
 	}
-	for i := p.X - 10; i <= p.X + 10; i++ {
+	for i := p.X - 10; i <= p.X+10; i++ {
 		img.Set(i, p.Y, red)
-		img.Set(i, p.Y + 1, red)
+		img.Set(i, p.Y+1, red)
 	}
-	for j := p.Y - 10; j <= p.Y + 10; j++ {
+	for j := p.Y - 10; j <= p.Y+10; j++ {
 		img.Set(p.X, j, red)
-		img.Set(p.X + 1, j, red)
+		img.Set(p.X+1, j, red)
 	}
 }
 
 func main() {
 	log.SetOutput(os.Stdout)
-	file, err := os.Open("/Users/SU/projects/gillnet/go/src/yi/test-3.jpg")
+	output := flag.String("o", "new.jpg", "path to output image")
+	flag.Parse()
+
+	input := flag.Arg(0)
+	if input == "" {
+		log.Fatal("please provide a valid input image")
+	}
+
+	file, err := os.Open(input)
 	if err != nil {
-		log.Fatal("Error while opening file")
+		log.Fatal("error while opening file")
 	}
 	defer file.Close()
 
@@ -58,8 +67,8 @@ func main() {
 		markPoint(p, newImg)
 	}
 
-	newFile, err := os.Create("new.jpeg")
-	if(err != nil) {
+	newFile, err := os.Create(*output)
+	if err != nil {
 		log.Fatal("Error creating new file")
 	}
 	defer newFile.Close()
