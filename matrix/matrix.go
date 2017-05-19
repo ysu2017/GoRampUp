@@ -235,7 +235,7 @@ func (m Matrix) Compare(compared Matrix, symbol Comparison) (Matrix, error) {
 					newMatrix[i][j] = 0
 				}
 			default:
-				return nil, fmt.Errorf("the compared matrix does not have same dimension")
+				return nil, fmt.Errorf("Invalid comparison symbol")
 			}
 		}
 	}
