@@ -3,9 +3,9 @@ package matrix
 import (
 	"fmt"
 	"image"
-	"log"
 	"math"
 	"runtime"
+	"strconv"
 )
 
 type Matrix [][]float64
@@ -122,15 +122,20 @@ func (m Matrix) Col() int {
 	return len(m[0])
 }
 
-func (m Matrix) Print() {
+func (m Matrix) String() string {
 	row := m.Row()
 	col := m.Col()
+	result := ""
 	for i := 0; i < row; i++ {
+		row := "["
 		for j := 0; j < col; j++ {
-			log.Println(m[i][j])
+			row += strconv.FormatFloat(m[i][j], 'f', -1, 64) + " "
 		}
+		result += row + "]\n"
 	}
+	return result
 }
+
 func (m Matrix) Ctranspose() Matrix {
 	newCol := m.Row()
 	newRow := m.Col()
