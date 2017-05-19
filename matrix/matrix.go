@@ -246,7 +246,7 @@ func (m Matrix) subMatrix(x int, y int, halfSize int) (Matrix, error) {
 	col := m.Col()
 	row := m.Row()
 	if x-halfSize < 0 || x+halfSize >= row || y-halfSize < 0 || y+halfSize >= col {
-		return nil, fmt.Errorf("Error creating sub matrix")
+		return nil, fmt.Errorf("error creating sub matrix")
 	}
 	matrix := NewMatrix(2*halfSize+1, 2*halfSize+1)
 	for i := x - halfSize; i <= x+halfSize; i++ {
